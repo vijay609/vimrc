@@ -84,13 +84,57 @@ if &t_Co > 2 || has("gui_running")
   set hlsearch
 endif
 
+" Enable pathogen
+" execute pathogen#infect()
+
 " Enable file type detection.
 " Use the default filetype settings, so that mail gets 'tw' set to 72,
 " 'cindent' is on in C files, etc.
 " Also load indent files, to automatically do language-dependent indenting.
-filetype plugin indent on
-
+" ***** Settings For Vundle{{{
 set nocompatible
+filetype off
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+" call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+call vundle#begin('C:\Users\vbaiyya\.vim\plugin')
+
+" let Vundle manage Vundle, required
+Plugin 'git://github.com/VundleVim/Vundle.vim'
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+Plugin 'git://github.com/tpope/vim-commentary.git'
+Plugin 'git://github.com/Shougo/neocomplete.vim'
+Plugin 'git://github.com/scrooloose/nerdtree.git'
+Plugin 'git://github.com/bling/vim-airline'
+Plugin 'git://github.com/kien/ctrlp.vim.git'
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on
+" To ignore plugin indent changes, instead use:
+" filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+" }}}
+
+" ***** Settings For Vim Airline{{{
+let g:airline_powerline_fonts = 1
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+
+" Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+" }}}
+
 " set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
 behave mswin
 " allow backspacing over everything in insert mode
@@ -126,8 +170,8 @@ set guioptions-=T           " Remove toolbar from gui
 set guifont=courier_new:h10:
 "default status line format is set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 "lets replace %P (percentage) by %L (line count)
-set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %L
-set laststatus=2            " always show the status line
+" set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %L
+" set laststatus=2            " always show the status line
 
 if has("gui_running")
     set go+=rL
@@ -140,7 +184,7 @@ endif
 " default value for tags is "./tags,tags". We are appending ";" so that gvim
 " looks for a tag file in the directory tree for the current file
 " :echo tagfiles() will display all the tag files in use at any time
-set tags=tags;
+" set tags=tags;
 " }}}
 
 " ***** Coloring changes {{{
@@ -159,46 +203,156 @@ hi Todo guifg=orangered guibg=yellow2
 
 " ***** neocomplcache settings {{{
 "-------------------------------------------------------------------------------
+"Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
-" Use neocomplcache.
-let g:neocomplcache_enable_at_startup = 1
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
 " Use smartcase.
-let g:neocomplcache_enable_smart_case = 1
+let g:neocomplete#enable_smart_case = 1
 " Set minimum syntax keyword length.
-let g:neocomplcache_min_syntax_length = 3
-" Close popup by <Space>.
-inoremap <expr><Space> pumvisible() ? neocomplcache#close_popup() : "\<Space>"
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
-" Recommended key-mappings. 
-" <CR>: close popup and save indent. 
-inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>" 
-" <TAB>: completion. 
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>" 
-" }}}
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : '',
+    \ 'vimshell' : $HOME.'/.vimshell_hist',
+    \ 'scheme' : $HOME.'/.gosh_completions'
+        \ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+    let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return neocomplete#close_popup() . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><C-y>  neocomplete#close_popup()
+inoremap <expr><C-e>  neocomplete#cancel_popup()
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
+
+" For cursor moving in insert mode(Not recommended)
+"inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
+"inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
+"inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
+"inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
+" Or set this.
+"let g:neocomplete#enable_cursor_hold_i = 1
+" Or set this.
+"let g:neocomplete#enable_insert_char_pre = 1
+
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+
+" Shell like behavior(not recommended).
+"set completeopt+=longest
+"let g:neocomplete#enable_auto_select = 1
+"let g:neocomplete#disable_auto_complete = 1
+"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+" For perlomni.vim setting.
+" https://github.com/c9s/perlomni.vim
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'" }}}
+
+
+" " ***** Multiple cursors settings {{{
+" "-------------------------------------------------------------------------------
+" 
+" " Called once right before you start selecting multiple cursors
+" function! Multiple_cursors_before()
+"   if exists(':NeoCompleteLock')==2
+"     exe 'NeoCompleteLock'
+"   endif
+" endfunction
+" 
+" " Called once only when the multiple selection is canceled (default <Esc>)
+" function! Multiple_cursors_after()
+"   if exists(':NeoCompleteUnlock')==2
+"     exe 'NeoCompleteUnlock'
+"   endif
+" endfunction
+" 
+" let g:multi_cursor_use_default_mapping=0
+" 
+" " Default mapping
+" let g:multi_cursor_next_key='<C-n>'
+" let g:multi_cursor_prev_key='<C-p>'
+" let g:multi_cursor_skip_key='<C-x>'
+" let g:multi_cursor_quit_key='<Esc>'
+" " }}}
 
 " ***** CTRLP settings {{{
 "-------------------------------------------------------------------------------
-let g:ctrlp_extensions=['dir', 'bookmarkdir']
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP $BASEDIR\xbox\base\input\ht'
-let g:ctrlp_custom_ignore = {
-    \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$'
-    \ }
+" let g:ctrlp_extensions=['dir', 'bookmarkdir']
+" let g:ctrlp_map = '<c-p>'
+" let g:ctrlp_cmd = 'CtrlP $BASEDIR\'
+" let g:ctrlp_custom_ignore = {
+"     \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$'
+"     \ }
 " let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d'  " Windows
-let g:ctrlp_regexp = 1
-let g:ctrlp_by_filename = 1
-let g:ctrlp_tabpage_position = 'ac'
-let g:ctrlp_use_caching = 1
-let g:ctrlp_clear_cache_on_exit = 0
-let g:ctrlp_mruf_relative = 1
-" }}}
+" let g:ctrlp_regexp = 1
+" let g:ctrlp_by_filename = 1
+" let g:ctrlp_tabpage_position = 'ac'
+" let g:ctrlp_use_caching = 1
+" let g:ctrlp_clear_cache_on_exit = 0
+" let g:ctrlp_mruf_relative = 1
 
+let mapleader = " "
+" Setup some default ignores
+let g:ctrlp_custom_ignore = {
+  \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$\|sd\.map\|sd\.ini\|sources.*\|dirs.*'
+\}
+
+" Use the nearest .git directory as the cwd
+" This makes a lot of sense if you are working on a project that is in version
+" control. It also supports works with .svn, .hg, .bzr.
+let g:ctrlp_root_markers = ['ObjectCapture']
+
+" Use a leader instead of the actual named binding
+
+nmap <leader>p :CtrlP<cr>
+
+" Easy bindings for its various modes
+nmap <leader>bb :CtrlPBuffer<cr>
+nmap <leader>bm :CtrlPMixed<cr>
+nmap <leader>bs :CtrlPMRU<cr>
+" }}}
 "
 " ***** Commands {{{
 "-------------------------------------------------------------------------------
-command! -range Comment call Comment(<line1>,<line2>)
-command! -range Uncomment call UnComment(<line1>,<line2>)
 command! Sde call SdEdit(expand('%'))
 command! Olo silent !start odd -lo %
 command! Sdv silent !start sdv %
@@ -284,8 +438,8 @@ noremap <A-t> <C-W>T
 noremap <A-=> <C-W>=
 
 " Move accross tabs
-map <C-Right> :tabn<CR>
-map <C-Left> :tabp<CR>
+map <C-Right> :bnext<CR>
+map <C-Left> :bprevious<CR>
 map <C-Up> :tabfirst<CR>
 map <C-Down> :tabl<CR>
 
