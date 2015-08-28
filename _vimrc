@@ -98,7 +98,7 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 " call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
-call vundle#begin('C:\Users\vbaiyya\.vim\plugin')
+call vundle#begin('$USERPROFILE\.vim\plugin')
 
 " let Vundle manage Vundle, required
 Plugin 'git://github.com/VundleVim/Vundle.vim'
