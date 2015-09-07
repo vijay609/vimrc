@@ -84,14 +84,12 @@ if &t_Co > 2 || has("gui_running")
   set hlsearch
 endif
 
-" Enable pathogen
-" execute pathogen#infect()
-
 " Enable file type detection.
 " Use the default filetype settings, so that mail gets 'tw' set to 72,
 " 'cindent' is on in C files, etc.
 " Also load indent files, to automatically do language-dependent indenting.
 " ***** Settings For Vundle{{{
+"-------------------------------------------------------------------------------
 set nocompatible
 filetype off
 " set the runtime path to include Vundle and initialize
@@ -110,6 +108,8 @@ Plugin 'git://github.com/Shougo/neocomplete.vim'
 Plugin 'git://github.com/scrooloose/nerdtree.git'
 Plugin 'git://github.com/bling/vim-airline'
 Plugin 'git://github.com/kien/ctrlp.vim.git'
+Plugin 'git://github.com/Raimondi/delimitMate.git'
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on
@@ -127,6 +127,7 @@ filetype plugin indent on
 " }}}
 
 " ***** Settings For Vim Airline{{{
+"-------------------------------------------------------------------------------
 let g:airline_powerline_fonts = 1
 " Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
@@ -168,36 +169,19 @@ set virtualedit=block       " :h virtualedit
 set guioptions-=m           " Remove menubar from gui
 set guioptions-=T           " Remove toolbar from gui
 set guifont=courier_new:h10:
-"default status line format is set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
-"lets replace %P (percentage) by %L (line count)
-" set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %L
-" set laststatus=2            " always show the status line
 
 if has("gui_running")
     set go+=rL
     " Maximize window on start up
     au GUIEnter * simalt ~x 
 endif
-
-
-" Tags
-" default value for tags is "./tags,tags". We are appending ";" so that gvim
-" looks for a tag file in the directory tree for the current file
-" :echo tagfiles() will display all the tag files in use at any time
-" set tags=tags;
 " }}}
 
 " ***** Coloring changes {{{
 "-------------------------------------------------------------------------------
-colorscheme molokai
-" set cc=81          " highlight column 81
-" hi PMenuSel guibg=gray90 guifg=gray10
-" hi Pmenu guibg=gray50
-" hi PmenuThumb guifg=gray35
-" hi ColorColumn guibg=grey21
-hi IncSearch guifg=wheat guibg=peru
-hi Search guibg=peru guifg=wheat
-hi Todo guifg=orangered guibg=yellow2
+syntax enable
+set background=dark
+colorscheme solarized
 " }}}
 
 
@@ -285,52 +269,17 @@ endif
 
 " For perlomni.vim setting.
 " https://github.com/c9s/perlomni.vim
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'" }}}
-
-
-" " ***** Multiple cursors settings {{{
-" "-------------------------------------------------------------------------------
-" 
-" " Called once right before you start selecting multiple cursors
-" function! Multiple_cursors_before()
-"   if exists(':NeoCompleteLock')==2
-"     exe 'NeoCompleteLock'
-"   endif
-" endfunction
-" 
-" " Called once only when the multiple selection is canceled (default <Esc>)
-" function! Multiple_cursors_after()
-"   if exists(':NeoCompleteUnlock')==2
-"     exe 'NeoCompleteUnlock'
-"   endif
-" endfunction
-" 
-" let g:multi_cursor_use_default_mapping=0
-" 
-" " Default mapping
-" let g:multi_cursor_next_key='<C-n>'
-" let g:multi_cursor_prev_key='<C-p>'
-" let g:multi_cursor_skip_key='<C-x>'
-" let g:multi_cursor_quit_key='<Esc>'
-" " }}}
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+" }}}
+" ***** NerdTree settings {{{
+let NERDTreeIgnore=['buildchk*[[file]]', 'buildfre*[[file]]', 'tags[[file]]']
+"-------------------------------------------------------------------------------
+" }}}
 
 " ***** CTRLP settings {{{
 "-------------------------------------------------------------------------------
-" let g:ctrlp_extensions=['dir', 'bookmarkdir']
-" let g:ctrlp_map = '<c-p>'
-" let g:ctrlp_cmd = 'CtrlP $BASEDIR\'
-" let g:ctrlp_custom_ignore = {
-"     \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$'
-"     \ }
-" let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d'  " Windows
-" let g:ctrlp_regexp = 1
-" let g:ctrlp_by_filename = 1
-" let g:ctrlp_tabpage_position = 'ac'
-" let g:ctrlp_use_caching = 1
-" let g:ctrlp_clear_cache_on_exit = 0
-" let g:ctrlp_mruf_relative = 1
-
 let mapleader = " "
+let g:ctrlp_cmd = 'CtrlPLastMode'
 " Setup some default ignores
 let g:ctrlp_custom_ignore = {
   \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$\|sd\.map\|sd\.ini\|sources.*\|dirs.*'
@@ -350,6 +299,11 @@ nmap <leader>bb :CtrlPBuffer<cr>
 nmap <leader>bm :CtrlPMixed<cr>
 nmap <leader>bs :CtrlPMRU<cr>
 " }}}
+" ***** Delimtmate settings {{{
+"-------------------------------------------------------------------------------
+let delimitMate_expand_space = 1
+let delimitMate_expand_cr = 1
+" }}}
 "
 " ***** Commands {{{
 "-------------------------------------------------------------------------------
@@ -358,7 +312,6 @@ command! Olo silent !start odd -lo %
 command! Sdv silent !start sdv %
 command! CopyFilename let @*=expand('%:p')
 command! CopyFilepath let @*=expand('%:p:h')
-command! UpdateLocalTags exe 'silent !start /MIN updateLocalTags.cmd ' . expand('%:p')
 command! OpenMatch call OpenMatchingFile()
 "command! OpenMatch echo expand('%')
 " }}}
@@ -387,7 +340,6 @@ augroup Special
     au BufRead,BufNewFile *.man,        set ft=xml
     au BufEnter *                       silent! lcd %:p:h
     au FileChangedRO *                  call SdEditIfNecessary(expand("<afile>"))
-    au BufWritePost *.c,*.cpp,*.h       UpdateLocalTags
 augroup END
 " }}}
 
@@ -398,13 +350,11 @@ map ,, "*
 map <F4> :OpenMatch
 " look into using <C-W>gf for the following
 map <F5> :NERDTreeToggle<CR>
-map <F10> :TagbarToggle<CR>
 
 "<C-O> takes us to normal mode for one command
 imap <F2> <C-O><F2>
 imap <F3> <C-O><F3>
 imap <C-V> <C-O>"+gp
-imap <F10> <C-O>:TagbarToggle<CR>
 
 "Sick of capslock being on when I press H,J,K and L
 map H h
@@ -437,7 +387,7 @@ noremap <A-l> <C-W>L
 noremap <A-t> <C-W>T
 noremap <A-=> <C-W>=
 
-" Move accross tabs
+" Move accross buffers
 map <C-Right> :bnext<CR>
 map <C-Left> :bprevious<CR>
 map <C-Up> :tabfirst<CR>
