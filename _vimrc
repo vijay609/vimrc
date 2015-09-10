@@ -413,6 +413,9 @@ inoremap <C-Y> <C-O><C-R>
 
 " Remap Esc key in different modes
 inoremap ii <Esc>
+inoremap II <Esc>
+inoremap iI <Esc>
+inoremap Ii <Esc>
 inoremap ;; <Esc>
 cnoremap ;; <C-C>
 noremap ;; <C-C>
