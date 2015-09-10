@@ -109,6 +109,7 @@ Plugin 'git://github.com/scrooloose/nerdtree.git'
 Plugin 'git://github.com/bling/vim-airline'
 Plugin 'git://github.com/kien/ctrlp.vim.git'
 Plugin 'git://github.com/Raimondi/delimitMate.git'
+Plugin 'git://github.com/altercation/vim-colors-solarized.git'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
