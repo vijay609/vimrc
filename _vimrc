@@ -104,12 +104,15 @@ Plugin 'git://github.com/VundleVim/Vundle.vim'
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 Plugin 'git://github.com/tpope/vim-commentary.git'
-Plugin 'git://github.com/Shougo/neocomplete.vim'
+"Plugin 'git://github.com/Shougo/neocomplete.vim'
 Plugin 'git://github.com/scrooloose/nerdtree.git'
 Plugin 'git://github.com/bling/vim-airline'
-Plugin 'git://github.com/kien/ctrlp.vim.git'
+Plugin 'git://github.com/ctrlpvim/ctrlp.vim.git'
 Plugin 'git://github.com/Raimondi/delimitMate.git'
 Plugin 'git://github.com/altercation/vim-colors-solarized.git'
+Plugin 'git://github.com/junegunn/vim-easy-align.git'
+Plugin 'git://github.com/mileszs/ack.vim'
+Plugin 'git://github.com/rking/ag.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -136,6 +139,7 @@ let g:airline#extensions#tabline#enabled = 1
 " Show just the filename
 let g:airline#extensions#tabline#fnamemod = ':t'
 " }}}
+
 
 " set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
 behave mswin
@@ -286,11 +290,15 @@ let g:ctrlp_custom_ignore = {
   \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$\|sd\.map\|sd\.ini\|sources.*\|dirs.*'
 \}
 
+let g:ctrlp_cache_dir = '$_NTDRIVE$_NTROOT\.cache\ctrlp'
+
 " Use the nearest .git directory as the cwd
 " This makes a lot of sense if you are working on a project that is in version
 " control. It also supports works with .svn, .hg, .bzr.
 let g:ctrlp_root_markers = ['ObjectCapture']
 
+" Do not start in regex mode
+let g:ctrlp_regexp = 0
 " Use a leader instead of the actual named binding
 
 nmap <leader>p :CtrlP<cr>
@@ -300,6 +308,22 @@ nmap <leader>bb :CtrlPBuffer<cr>
 nmap <leader>bm :CtrlPMixed<cr>
 nmap <leader>bs :CtrlPMRU<cr>
 " }}}
+
+" ***** Settings For Silver Searcher{{{
+"-------------------------------------------------------------------------------
+" if executable ag is in path (google for silver searcher windows)
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+  
+  let g:ag_prg='ag -S --vimgrep --nocolor --nogroup --column --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs'
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'Ag -l --nocolor -g "" %s'
+endif
+" }}}
+
+
 " ***** Delimtmate settings {{{
 "-------------------------------------------------------------------------------
 let delimitMate_expand_space = 1
