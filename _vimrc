@@ -318,13 +318,14 @@ nmap <leader>bs :CtrlPMRU<cr>
 " if executable ag is in path (google for silver searcher windows)
 if executable('ag')
   " Use ag over grep
-  set grepprg=ag\ --nogroup\ --nocolor
+  set grepprg=Ag\ --nogroup\ --nocolor
   
-  let g:ag_prg='ag -S --vimgrep --nocolor --nogroup --column --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs'
+  let g:ag_prg='Ag -S --vimgrep --nocolor --nogroup --column --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs'
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'Ag! -l --nocolor -g --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs "" %s'
+  let g:ctrlp_user_command = 'Ag -l -g "" %s'
   let g:ag_working_path_mode='r'
+  let g:ag_highlight=1
 
   " Map Ag to \
   nnoremap \ :Ag!<SPACE>
