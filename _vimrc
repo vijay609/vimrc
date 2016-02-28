@@ -107,7 +107,7 @@ Plugin 'git://github.com/tpope/vim-commentary.git'
 "Plugin 'git://github.com/Shougo/neocomplete.vim'
 Plugin 'git://github.com/scrooloose/nerdtree.git'
 Plugin 'git://github.com/bling/vim-airline'
-Plugin 'git://github.com/ctrlpvim/ctrlp.vim.git'
+Plugin 'git://github.com/kien/ctrlp.vim.git'
 Plugin 'git://github.com/Raimondi/delimitMate.git'
 Plugin 'git://github.com/altercation/vim-colors-solarized.git'
 Plugin 'git://github.com/junegunn/vim-easy-align.git'
@@ -296,6 +296,10 @@ let g:ctrlp_cache_dir = '$_NTDRIVE$_NTROOT\.cache\ctrlp'
 " This makes a lot of sense if you are working on a project that is in version
 " control. It also supports works with .svn, .hg, .bzr.
 let g:ctrlp_root_markers = ['ObjectCapture']
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_use_caching = 1
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_switch_buffer = 'ETVH'
 
 " Do not start in regex mode
 let g:ctrlp_regexp = 0
@@ -319,8 +323,14 @@ if executable('ag')
   let g:ag_prg='ag -S --vimgrep --nocolor --nogroup --column --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs'
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'Ag -l --nocolor -g "" %s'
+  let g:ctrlp_user_command = 'Ag! -l --nocolor -g --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs "" %s'
+  let g:ag_working_path_mode='r'
+
+  " Map Ag to \
+  nnoremap \ :Ag!<SPACE>
+  
 endif
+
 " }}}
 
 
