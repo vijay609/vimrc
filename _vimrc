@@ -64,17 +64,6 @@ endif
   echohl None
 endfunction
 
-function! OpenMatchingFile()
-    let l:filename=expand('%:r')
-    let l:ext=expand('%:e')
-    if l:ext == 'h'
-        vsplit %:r.cpp
-    elseif l:ext == 'cpp'
-        vsplit %:r.h
-    endif
-endfunction
-" }}}
-
 " ***** Settings {{{
 "-------------------------------------------------------------------------------
 " Switch syntax highlighting on, when the terminal has colors
@@ -104,7 +93,7 @@ Plugin 'git://github.com/VundleVim/Vundle.vim'
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 Plugin 'git://github.com/tpope/vim-commentary.git'
-"Plugin 'git://github.com/Shougo/neocomplete.vim'
+Plugin 'git://github.com/Shougo/neocomplete.vim'
 Plugin 'git://github.com/scrooloose/nerdtree.git'
 Plugin 'git://github.com/bling/vim-airline'
 Plugin 'git://github.com/kien/ctrlp.vim.git'
@@ -113,6 +102,8 @@ Plugin 'git://github.com/altercation/vim-colors-solarized.git'
 Plugin 'git://github.com/junegunn/vim-easy-align.git'
 Plugin 'git://github.com/mileszs/ack.vim'
 Plugin 'git://github.com/rking/ag.vim'
+Plugin 'git://github.com/nathanaelkane/vim-indent-guides.git'
+Plugin 'git://github.com/tpope/vim-surround.git'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -224,29 +215,17 @@ inoremap <expr><C-l>     neocomplete#complete_common_string()
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 function! s:my_cr_function()
-  return neocomplete#close_popup() . "\<CR>"
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
   " For no inserting <CR> key.
-  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+  "return pumvisible() ? "\<C-y>" : "\<CR>"
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " <C-h>, <BS>: close popup and delete backword char.
 inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y>  neocomplete#close_popup()
-inoremap <expr><C-e>  neocomplete#cancel_popup()
 " Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
-
-" For cursor moving in insert mode(Not recommended)
-"inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-"inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-"inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-"inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-" Or set this.
-"let g:neocomplete#enable_cursor_hold_i = 1
-" Or set this.
-"let g:neocomplete#enable_insert_char_pre = 1
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
 
 " AutoComplPop like behavior.
 "let g:neocomplete#enable_auto_select = 1
@@ -269,13 +248,15 @@ if !exists('g:neocomplete#sources#omni#input_patterns')
   let g:neocomplete#sources#omni#input_patterns = {}
 endif
 "let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
 " For perlomni.vim setting.
 " https://github.com/c9s/perlomni.vim
 let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
 " }}}
+
+
 " ***** NerdTree settings {{{
 let NERDTreeIgnore=['buildchk*[[file]]', 'buildfre*[[file]]', 'tags[[file]]']
 "-------------------------------------------------------------------------------
@@ -329,6 +310,8 @@ if executable('ag')
 
   " Map Ag to \
   nnoremap \ :Ag!<SPACE>
+  " bind Ctrl-\ to grep word under cursor
+  nmap <C-\> :Ag!<SPACE><C-R><C-W>
   
 endif
 
@@ -340,6 +323,16 @@ endif
 let delimitMate_expand_space = 1
 let delimitMate_expand_cr = 1
 " }}}
+
+" ***** Vim Indent Guides settings {{{
+"-------------------------------------------------------------------------------
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_start_level = 3
+let g:indent_guides_guide_size = 1
+let g:indent_guides_color_change_percent = 3
+
+" }}}
+
 "
 " ***** Commands {{{
 "-------------------------------------------------------------------------------
@@ -348,8 +341,6 @@ command! Olo silent !start odd -lo %
 command! Sdv silent !start sdv %
 command! CopyFilename let @*=expand('%:p')
 command! CopyFilepath let @*=expand('%:p:h')
-command! OpenMatch call OpenMatchingFile()
-"command! OpenMatch echo expand('%')
 " }}}
 
 " ***** Auto Commands {{{
@@ -383,7 +374,6 @@ augroup END
 "-------------------------------------------------------------------------------
 map <F2> :Sde<CR>
 map ,, "*
-map <F4> :OpenMatch
 " look into using <C-W>gf for the following
 map <F5> :NERDTreeToggle<CR>
 
@@ -405,34 +395,23 @@ nmap <Leader>cd :lcd %:p:h<CR>
 nmap <Leader>cfp :CopyFilepath
 nmap <Leader>cfn :CopyFilename
 
-noremap <C-H>  <C-W><C-H>
-noremap <C-J>  <C-W><C-J>
-noremap <C-K>  <C-W><C-K>
-noremap <C-L>  <C-W><C-L>
+noremap <A-h>  <C-W><C-H>
+noremap <A-j>  <C-W><C-J>
+noremap <A-k>  <C-W><C-K>
+noremap <A-l>  <C-W><C-L>
 
-imap <C-H>  <C-O><C-W><C-H>
-imap <C-J>  <C-O><C-W><C-J>
-imap <C-K>  <C-O><C-W><C-K>
-imap <C-L>  <C-O><C-W><C-L>
+" imap <C-H>  <C-O><C-W><C-H>
+" imap <C-J>  <C-O><C-W><C-J>
+" imap <C-K>  <C-O><C-W><C-K>
+" imap <C-L>  <C-O><C-W><C-L>
 
 " Move split buffers in the current tab
-noremap <A-h> <C-W>H
-noremap <A-j> <C-W>J
-noremap <A-k> <C-W>K
-noremap <A-l> <C-W>L
-noremap <A-t> <C-W>T
+noremap <A-H> <C-W>H
+noremap <A-J> <C-W>J
+noremap <A-K> <C-W>K
+noremap <A-L> <C-W>L
+noremap <A-T> <C-W>T
 noremap <A-=> <C-W>=
-
-" Move accross buffers
-map <C-Right> :bnext<CR>
-map <C-Left> :bprevious<CR>
-map <C-Up> :tabfirst<CR>
-map <C-Down> :tabl<CR>
-
-imap <C-Right> <C-O><C-PageDown>
-imap <C-Left> <C-O><C-PageUp>
-imap <C-Up> <C-O>tabfirst<CR>
-imap <C-Down> <C-O>tabl<CR>
 
 inoremap Oo <Esc>O
 inoremap oO <Esc>O
