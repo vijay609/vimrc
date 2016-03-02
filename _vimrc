@@ -282,10 +282,7 @@ let g:ctrlp_use_caching = 1
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_switch_buffer = 'ETVH'
 
-" Do not start in regex mode
-let g:ctrlp_regexp = 0
 " Use a leader instead of the actual named binding
-
 nmap <leader>p :CtrlP<cr>
 
 " Easy bindings for its various modes
@@ -312,7 +309,6 @@ if executable('ag')
   nnoremap \ :Ag!<SPACE>
   " bind Ctrl-\ to grep word under cursor
   nmap <C-\> :Ag!<SPACE><C-R><C-W>
-  
 endif
 
 " }}}
