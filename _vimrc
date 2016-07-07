@@ -178,6 +178,7 @@ endif
 syntax enable
 set background=dark
 colorscheme solarized
+set colorcolumn=130
 " }}}
 
 
@@ -267,16 +268,18 @@ let NERDTreeIgnore=['buildchk*[[file]]', 'buildfre*[[file]]', 'tags[[file]]']
 let mapleader = " "
 let g:ctrlp_cmd = 'CtrlPLastMode'
 " Setup some default ignores
+"ctrlp_custom_ignore doest work if ctrlp_user_command is set
+
 let g:ctrlp_custom_ignore = {
-  \ 'file': 'buildchk\.*\|buildfre\.*\|build\.*\|tags\|\.log$\|sd\.map\|sd\.ini\|sources.*\|dirs.*'
-\}
+  \ 'file': 'dirs',
+  \ }
 
 let g:ctrlp_cache_dir = '$_NTDRIVE$_NTROOT\.cache\ctrlp'
 
 " Use the nearest .git directory as the cwd
 " This makes a lot of sense if you are working on a project that is in version
 " control. It also supports works with .svn, .hg, .bzr.
-let g:ctrlp_root_markers = ['ObjectCapture']
+let g:ctrlp_root_markers = ['ObjectCapture.inc']
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_use_caching = 1
 let g:ctrlp_clear_cache_on_exit = 0
@@ -298,7 +301,7 @@ if executable('ag')
   " Use ag over grep
   set grepprg=Ag\ --nogroup\ --nocolor
   
-  let g:ag_prg='Ag -S --vimgrep --nocolor --nogroup --column --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs'
+  let g:ag_prg='Ag -S --vimgrep --nocolor --nogroup --column --ignore *.log --ignore buildchk* --ignore buildfre* --ignore sd.* --ignore sources* --ignore dirs'
 
   " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
   let g:ctrlp_user_command = 'Ag -l -g "" %s'
@@ -361,6 +364,7 @@ augroup Special
     au!
     au FileChangedShell *               call FCSHandler(expand("<afile>:p"))
     au BufRead,BufNewFile *.man,        set ft=xml
+    au BufRead,BufNewFile *.hlsl,       set ft=c
     au BufEnter *                       silent! lcd %:p:h
     au FileChangedRO *                  call SdEditIfNecessary(expand("<afile>"))
 augroup END
@@ -445,6 +449,8 @@ map <S-Insert> "+gP
 
 cmap <C-V> <C-R>+
 cmap <S-Insert> <C-R>+
+
+set clipboard+=unnamed
 " }}}
 
 " ***** Abbreviations {{{
