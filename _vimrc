@@ -104,6 +104,7 @@ Plugin 'git://github.com/mileszs/ack.vim'
 Plugin 'git://github.com/rking/ag.vim'
 Plugin 'git://github.com/nathanaelkane/vim-indent-guides.git'
 Plugin 'git://github.com/tpope/vim-surround.git'
+Plugin 'git://github.com/easymotion/vim-easymotion'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -243,7 +244,6 @@ autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
 " Enable heavy omni completion.
 if !exists('g:neocomplete#sources#omni#input_patterns')
   let g:neocomplete#sources#omni#input_patterns = {}
@@ -265,7 +265,7 @@ let NERDTreeIgnore=['buildchk*[[file]]', 'buildfre*[[file]]', 'tags[[file]]']
 
 " ***** CTRLP settings {{{
 "-------------------------------------------------------------------------------
-let mapleader = " "
+let mapleader = "\<Space>"
 let g:ctrlp_cmd = 'CtrlPLastMode'
 " Setup some default ignores
 "ctrlp_custom_ignore doest work if ctrlp_user_command is set
@@ -292,6 +292,29 @@ nmap <leader>p :CtrlP<cr>
 nmap <leader>bb :CtrlPBuffer<cr>
 nmap <leader>bm :CtrlPMixed<cr>
 nmap <leader>bs :CtrlPMRU<cr>
+" }}}
+
+" ***** EasyMotion settings {{{
+"-------------------------------------------------------------------------------
+" Change the leader from <Leader><Leader> to <Leader>
+map <Leader> <Plug>(easymotion-prefix)
+
+" let g:EasyMotion_do_mapping = 0 " Disable default mappings
+
+" Jump to anywhere you want with minimal keystrokes, with just one key binding.
+" `s{char}{label}`
+nmap s <Plug>(easymotion-overwin-f)
+" or
+" `s{char}{char}{label}`
+" Need one more keystroke, but on average, it may be more comfortable.
+" nmap s <Plug>(easymotion-overwin-f2)
+
+" Turn on case insensitive feature
+let g:EasyMotion_smartcase = 1
+
+" JK motions: Line motions
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
 " }}}
 
 " ***** Settings For Silver Searcher{{{
@@ -389,8 +412,7 @@ map K k
 map L l
 map Q q
 
-nmap <silent> <Space> :nohlsearch<CR>
-nmap <Leader>b :ls<CR>:b<SPACE>
+nmap <silent> <C-Space> :nohlsearch<CR>
 nmap <Leader>cd :lcd %:p:h<CR>
 nmap <Leader>cfp :CopyFilepath
 nmap <Leader>cfn :CopyFilename
@@ -455,8 +477,6 @@ set clipboard+=unnamed
 
 " ***** Abbreviations {{{
 "-------------------------------------------------------------------------------
-cabbrev olo Olo
-cabbrev sdv Sdv
 cabbrev sde Sde
 
 cabbrev W w
