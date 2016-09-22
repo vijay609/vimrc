@@ -82,10 +82,11 @@ endif
 set nocompatible
 filetype off
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=$USERPROFILE/vimfiles/bundle/Vundle.vim/
+call vundle#begin('$USERPROFILE/vimfiles/bundle/')
 " call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
-call vundle#begin('$USERPROFILE\.vim\plugin')
+" call vundle#begin('$USERPROFILE\.vim\plugin')
 
 " let Vundle manage Vundle, required
 Plugin 'git://github.com/VundleVim/Vundle.vim'
